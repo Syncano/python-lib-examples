@@ -37,4 +37,3 @@ for restaurant in Object.please.list(class_name='restaurant'):
 # remove relations
 
 # table reservation
-

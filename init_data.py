@@ -190,5 +190,3 @@ class RestaurantAppDataCreator(object):
 
 r_app = RestaurantAppDataCreator()
 r_app.rebuild_data()
-
-
