@@ -1,0 +1,34 @@
+Ulimate Data Object examples. 
+
+* Think of problem to solve - think of the story!
+
+Restaurants with menus + items, tables and tags
+
+restaurant:
+* name
+* location
+* phone_number
+* menus
+* tables
+
+menu:
+* items
+* name
+* start_date
+* end_date
+
+item:
+* name
+* description
+* header_picture
+* body_picture
+
+tag:
+* name
+* description
+
+table:
+* number
+* person_count
+* by_window
+
