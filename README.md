@@ -4,19 +4,19 @@
 Please use the newest version of Syncano LIB for running this examples.
 
 # Table of Contents
-1. Preface [preface]
-2. App core functionality [app-core-functionality]
-3. Create all needed models [create-all-needed-models]
-4. Query on geopoint field [query-on-geopoint-field]
-5. Query on relation field [query-on-relation-field]
-6. Query on datetime field [query-on-datetime-field]
-7. Query on string fields [query-on-string-fields]
-8. Query on multiples fields [query-on-multiples-fields]
-9. Made a table reservation [made-a-table-reservation]
-10. Add objects to relations [add-objects-to-relations]
-11. Remove objects from relations [remove-objects-from-relations]
-12. Handle the files [handle-the-files]
-13. Contribute [contribute]
+1. [Preface] (#preface)
+2. [App core functionality] (#app-core-functionality)
+3. [Create all needed models] (#create-all-needed-models)
+4. [Query on geopoint field] (#query-on-geopoint-field)
+5. [Query on relation field] (#query-on-relation-field)
+6. [Query on datetime field] (#query-on-datetime-field)
+7. [Query on string fields] (#query-on-string-fields)
+8. [Query on multiples fields] (#query-on-multiples-fields)
+9. [Made a table reservation] (#made-a-table-reservation)
+10. [Add objects to relations] (#add-objects-to-relations)
+11. [Remove objects from relations] (#remove-objects-from-relations)
+12. [Handle the files] (#handle-the-files)
+13. [Contribute] (#contribute)
 
 ## Preface
 
