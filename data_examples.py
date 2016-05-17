@@ -1,6 +1,6 @@
 
 import syncano
-from syncano.models import Class, Instance, Object, GeoPoint
+from syncano.models import Class, Distance, GeoPoint, Object
 
 
 INSTANCE_NAME = ''
@@ -14,26 +14,55 @@ connection = syncano.connect(
     verify_ssl=False
 )
 
-
+# get the list of restaurant;
 for restaurant in Object.please.list(class_name='restaurant'):
     print(restaurant.name, restaurant.location)
 
-# filter with geo
+# get the list of tags;
+for tag in Object.please.list(class_name='tag'):
+    print(tag.name)
 
-# filter on relation field
 
-# filter on datetime field (create new menu)
+# Query on geopoint field
 
-# filter on string fields
+restaurants = Object.please.list(class_name='restaurant').filter(
+    location__near=(
+        GeoPoint(52.2297, 21.0122),
+        Distance(kilometers=0.1)
+    )
+)
 
-# filter on multiples fields
+for restaurant in restaurants:
+    print(restaurant.name)
 
-# filter on tags
+# or, if you already have the class:
 
-# add files to the menu items
+restaurant_class = Class.please.get(name='restaurant')
+restaurants = restaurant_class.objects.filter(
+    location__near=(
+        GeoPoint(52.2297, 21.0122),
+        Distance(kilometers=0.1)
+    )
+)
 
-# add relations
+for restaurant in restaurants:
+    print(restaurant.name)
 
-# remove relations
 
-# table reservation
+# Query on relation field
+
+# Query on datetime field
+
+# Query on string fields
+
+# Query on multiples fields
+
+# Query on related tags
+
+# Handle the files
+
+# Add objects to relations
+
+# Remove objects from relations
+
+# Made a table reservation

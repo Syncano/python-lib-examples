@@ -2,7 +2,7 @@
 from datetime import datetime
 
 import syncano
-from syncano.models import Class, Instance, Object, GeoPoint
+from syncano.models import Class, GeoPoint, Object
 
 
 INSTANCE_NAME = ''
@@ -21,6 +21,7 @@ class RestaurantAppDataCreator(object):
 
     ITEM = 'item'
     MENU = 'menu'
+    RESERVATION = 'reservation'
     TABLE = 'table'
     TAG = 'tag'
     RESTAURANT = 'restaurant'
@@ -40,10 +41,17 @@ class RestaurantAppDataCreator(object):
         {"name": "end_date", "type": "datetime", "filter_index": True},
     ]
 
+    reservation_schema = [
+        {"name": "date", "type": "datetime"},
+        {"name": "user_identifier", "type": "string"},
+    ]
+
     table_schema = [
         {"name": "identifier", "type": "string"},
         {"name": "person_count", "type": "integer", "filter_index": True},
         {"name": "by_window", "type": "boolean", "filter_index": True},
+        {"name": "reserved", "type": "boolean", "filter_index": True},
+        {"name": "reservations", "type": "relation", "target": "reservation"},
     ]
 
     tag_schema = [
@@ -72,6 +80,7 @@ class RestaurantAppDataCreator(object):
         classes = [
             (self.ITEM, self.item_schema),
             (self.MENU, self.menu_schema),
+            (self.RESERVATION, self.reservation_schema),
             (self.TABLE, self.table_schema),
             (self.TAG, self.tag_schema),
             (self.RESTAURANT, self.restaurant_schema),
