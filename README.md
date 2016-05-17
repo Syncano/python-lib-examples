@@ -4,27 +4,23 @@
 Please use the newest version of Syncano LIB for running this examples.
 
 # Table of Contents
-1. [Preface](#precafe)
-2. [App core functionality](#app_core_func)
-3. [Create models](#models_create)
-4. [ Query on geopoint field](#geo_point_query)
-5. [ Query relation field](#relation_query)
+TBD.
 
-## Preface [preface]
+## Preface
 
 You want to build an app. This app is going to store information about restaurant in your town. Later in your country 
  and later in the entire world. You're a genius who want to revolution the table reservation process.  
 
 And you're using Syncano.
 
-## App core functionality [app_core_func]
+## App core functionality
 
 * user can search restaurant by geo location;
 * user can search restaurant by empty tables in there;
 * user can search restaurant by tags (which can describe a menu or some special abilities like: "kid friendly");
 * user can make a reservation for the table; 
 
-## Create all needed models [models_create]
+## Create all needed models
 
 Firstly you will need some classes definition - based on that you will be storing your data.
  
@@ -146,7 +142,7 @@ for restaurant in Object.please.list(class_name='restaurant'):
 
 ```
 
-### Query on geopoint field [geo_point_query]
+### Query on geopoint field
 
 ```python
 restaurants = Object.please.list(class_name='restaurant').filter(
@@ -183,7 +179,7 @@ restaurants = restaurant_class.objects.filter(
 )
 ```
 
-### Query on relation field [relation_query]
+### Query on relation field
 
 Now we will make a query which find all the restaurants with specified tag.
 
