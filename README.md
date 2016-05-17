@@ -1,6 +1,7 @@
 
 # This repository stores an extensive guide for using data objects in Syncano with Python Library
 
+Please use the newest version of Syncano LIB for running this examples.
 
 ## Preface
 
