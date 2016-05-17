@@ -36,6 +36,7 @@ menu_schema = [
     {"name": "items", "type": "relation", "target": "item"},
     {"name": "start_date", "type": "datetime", "filter_index": True},
     {"name": "end_date", "type": "datetime", "filter_index": True},
+    {"name": "restaurant", "type": "reference", "target": "restaurant", "filter_index": True},
 ]
 
 reservation_schema = [
@@ -60,7 +61,6 @@ restaurant_schema = [
     {"name": "name", "type": "string", "filter_index": True},
     {"name": "location", "type": "geopoint", "filter_index": True},
     {"name": "phone_number", "type": "string"},
-    {"name": "menus", "type": "relation", "target": "menu", "filter_index": True},
     {"name": "tables", "type": "relation", "target": "table", "filter_index": True},
     {"name": "tags", "type": "relation", "target": "tag", "filter_index": True},
 ]
@@ -198,16 +198,178 @@ This will return all restaurants that are related with tag: `pizza`
 
 ### Query on datetime field
 
+We prepared a `start_date` and `end_date` fields in `menu` class - it's because the menu can be seasonal.
+  
+Play a little with the datetime queries.
+
+```python
+
+from datetime import datetime
+
+today = datetime.now()
+
+menu_class = Class.please.get(name='menu')
+menus = menu_class.objects.filter(
+    start_date__lte=today,
+)
+
+```
+
+This query will return all the menu that starts in the past (earlier than today). Currently it will be both menus
+for both defined restaurants.
+
+Lets make a query which allow to obtain menu for specified restaurant:
+
+```python
+
+# assume we already have the restaurant object, which can be obtained as follows:
+
+restaurant_class = Class.please.get(name='restaurant')
+pit_bull = restaurant_class.objects.filter(
+    location__near=(
+        GeoPoint(52.2297, 21.0122),
+        Distance(kilometers=0.1)
+    )
+).first()
+
+# in menu we have a reference to the restaurant, lets use it:
+
+menu_class = Class.please.get(name='menu')
+menus = menu_class.objects.filter(
+    restaurant__eq=pit_bull.id,
+    start_date__lte=today,
+)
+
+```
+
 ### Query on string fields
+
+Python Lib currently supports only one string field specific lookup: starstwith, 
+
+Lets find a menu items which starts with some word.
+
+```python
+
+item_class = Class.objects.get(name='item')
+items = item_class.objects.filter(
+    name__startswith='Carbo'  # case sensitive
+)
+
+```
+
+Currently we are working to add support with another string fields lookups, eg.: istartswith. 
 
 ### Query on multiples fields
 
-### Query on related tags
+Lets find all restaurants that has an tables by window and for 4 people in some location.
+And lets make sure that the restaurant name starts with 'Pit';
 
-### Handle the files
+```python
+restaurant_class = Class.please.get(name='restaurant')
+restaurants = restaurant_class.objects.filter(
+    location__near=(
+        GeoPoint(52.2297, 21.0122),
+        Distance(miles=0.1)
+    ),
+    name__startswith='Pit',
+    tables__by_window__eq=True,
+    tables__reserved__eq=False,
+    tables__person_count__gte=4,
+)
+
+```
+
+### Made a table reservation
+
+Now when we already have a restaurants that meets our criteria - lets make a table reservation;
+
+```python
+tables_ids = restaurants[0].tables
+
+table_class = Class.please.get(name='table')
+table = table_class.objects.filter(
+    id__in=tables_ids, 
+    by_window__eq=True, 
+    reserved__eq=False,
+    person_count__gte=4
+).update()
+
+table.reserved = True
+table.save()
+
+# check if reservation is successful:
+for table in table_class.objects.filter(id__in=tables_ids):
+    print(table.reserved)
+
+```
 
 ### Add objects to relations
 
+We just mark table as reserved - but do not know to who it is reserved. 
+Let's make a reservation object and assign it to the table above;
+
+```python
+
+from datetime import datetime 
+
+reservation_class = Class.please.get(class_name='reservation')
+reservation = reservation_class.objects.create(
+    user_identifier='user42@example.com',
+    date=datetime.now()
+)
+
+# from script above
+table.reservations_set.add(reservation)  # the table object is refreshed in such scenario;
+
+```
 ### Remove objects from relations
 
-### Made a table reservation
+Removing a object from relation is pretty straightforward, assume that above reservation was cancelled:
+
+```python
+table.reservation_set.remove(reservation)
+```
+
+### Handle the files
+
+We created a files in menu item schema - but there are empty. Lets fill it with some data.
+
+```python
+
+carbonara_item = item_class.objects.filter(
+    name__startswith='Carbo'
+).first()
+
+header_picture = open('example_files/carbonara1.jpeg', 'r+')
+body_picture = open('example_files/carbonara2.jpeg', 'r+')
+carbonara_item.header_picture = header_picture
+carbonara_item.body_picture = body_picture
+carbonara_item.save()
+
+header_picture.close()
+body_picture.close()
+
+```
+
+When creating an object with files, you can use following syntax also:
+
+```python
+with open('example_files/carbonara1.jpeg', 'r+') as header_picture:
+    item_class.objects.create(
+        header_picture=header_picture
+    )
+```
+
+You can use such syntax alternatively.
+
+## Contribute
+
+Contact us if you would like to see more examples here:
+
+* Github: 
+    * https://github.com/Syncano/
+* Gitter:
+    * https://gitter.im/Syncano/community
+    * https://gitter.im/Syncano/community-pl
+* Slack: 
+    * http://syncano-community.github.io/slack-invite/
