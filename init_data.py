@@ -55,7 +55,7 @@ class RestaurantAppDataCreator(object):
     ]
 
     tag_schema = [
-        {"name": "name", "type": "string"},
+        {"name": "tag", "type": "string", "filter_index": True},
         {"name": "description", "type": "string"},
     ]
 
@@ -63,13 +63,13 @@ class RestaurantAppDataCreator(object):
         {"name": "name", "type": "string", "filter_index": True},
         {"name": "location", "type": "geopoint", "filter_index": True},
         {"name": "phone_number", "type": "string"},
-        {"name": "menus", "type": "relation", "target": "menu"},
-        {"name": "tables", "type": "relation", "target": "table"},
-        {"name": "tags", "type": "relation", "target": "tag"},
+        {"name": "menus", "type": "relation", "target": "menu", "filter_index": True},
+        {"name": "tables", "type": "relation", "target": "table", "filter_index": True},
+        {"name": "tags", "type": "relation", "target": "tag", "filter_index": True},
     ]
 
     def clear_classes(self):
-        for class_name in [self.ITEM, self.MENU, self.TABLE, self.TAG, self.RESTAURANT]:
+        for class_name in [self.ITEM, self.MENU, self.TABLE, self.TAG, self.RESTAURANT, self.RESERVATION]:
             try:
                 Class.please.delete(name=class_name)
             except Class.DoesNotExist:
@@ -110,10 +110,10 @@ class RestaurantAppDataCreator(object):
 
         # create tags
 
-        steaks_tag = Object.please.create(class_name=self.TAG, name='steaks')
-        burgers_tag = Object.please.create(class_name=self.TAG, name='burgers')
-        pizza_tag = Object.please.create(class_name=self.TAG, name='pizza')
-        pasta_tag = Object.please.create(class_name=self.TAG, name='pasta')
+        steaks_tag = Object.please.create(class_name=self.TAG, tag='steaks')
+        burgers_tag = Object.please.create(class_name=self.TAG, tag='burgers')
+        pizza_tag = Object.please.create(class_name=self.TAG, tag='pizza')
+        pasta_tag = Object.please.create(class_name=self.TAG, tag='pasta')
 
         # assing tags to restaurants
         pit_bull.tags_set.add(steaks_tag, burgers_tag)

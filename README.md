@@ -52,7 +52,7 @@ table_schema = [
 ]
 
 tag_schema = [
-    {"name": "name", "type": "string"},
+    {"name": "tag", "type": "string", "filter_index": True},
     {"name": "description", "type": "string"},
 ]
 
@@ -60,9 +60,9 @@ restaurant_schema = [
     {"name": "name", "type": "string", "filter_index": True},
     {"name": "location", "type": "geopoint", "filter_index": True},
     {"name": "phone_number", "type": "string"},
-    {"name": "menus", "type": "relation", "target": "menu"},
-    {"name": "tables", "type": "relation", "target": "table"},
-    {"name": "tags", "type": "relation", "target": "tag"},
+    {"name": "menus", "type": "relation", "target": "menu", "filter_index": True},
+    {"name": "tables", "type": "relation", "target": "table", "filter_index": True},
+    {"name": "tags", "type": "relation", "target": "tag", "filter_index": True},
 ]
 ```
 
@@ -97,6 +97,7 @@ the starting point - will clear all the later provided data). The script will al
 
 # you can use following syntax
 
+item_class = Class.please.get(name='item')
 pasta = item_class.objects.create(
     name="Carbonara", 
     description="Pasta with bacon and eggs", 
@@ -128,7 +129,7 @@ RESTAURANT = 'restaurant'
 # query about tags:
 
 for tag in Object.please.list(class_name=TAG):
-    print(tag.name)
+    print(tag.tag)
     
 # query about restaurants:
 
@@ -147,7 +148,7 @@ restaurants = Object.please.list(class_name='restaurant').filter(
     )
 )
 
-# or (if restauratn class is present)
+# or (if restaurant class is present)
 
 restaurant_class = Class.please.get(name='restaurant')
 restaurants = restaurant_class.objects.filter(
@@ -159,7 +160,8 @@ restaurants = restaurant_class.objects.filter(
 
 ```
 
-Such query will find all restaurants which are 0.1 kilometers from point: latitude = 52.2297, longitdue = 21.0122.
+Such query will find all restaurants which are 0.1 kilometers from point: latitude = 52.2297, longitude = 21.0122 
+- which in our examples will be `Pit Bull - London Steakhouse`
  
 You can also specify the miles there - if you prefer:
  
@@ -174,6 +176,25 @@ restaurants = restaurant_class.objects.filter(
 ```
 
 ### Query on relation field
+
+Now we will make a query which find all the restaurants with specified tag.
+
+```python
+resturants = Object.please.list(class_name='restaurant').filter(
+    tags__tag__eq='pizza'
+)
+
+# or (when restaurant class is present)
+
+restaurant_class = Class.please.get(name='restaurant')
+restaurants = restaurant_class.objects.filter(
+    tags__tag__eq='pizza'
+)
+
+```
+
+This will return all restaurants that are related with tag: `pizza`
+
 
 ### Query on datetime field
 

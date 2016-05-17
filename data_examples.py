@@ -15,12 +15,14 @@ connection = syncano.connect(
 )
 
 # get the list of restaurant;
+print('Restaurants:')
 for restaurant in Object.please.list(class_name='restaurant'):
     print(restaurant.name, restaurant.location)
 
 # get the list of tags;
+print('Tags:')
 for tag in Object.please.list(class_name='tag'):
-    print(tag.name)
+    print(tag.tag)
 
 
 # Query on geopoint field
@@ -32,6 +34,7 @@ restaurants = Object.please.list(class_name='restaurant').filter(
     )
 )
 
+print('Restaurants with 0.1 km from the 52.2297, 21.0122 location:')
 for restaurant in restaurants:
     print(restaurant.name)
 
@@ -45,11 +48,32 @@ restaurants = restaurant_class.objects.filter(
     )
 )
 
+print('Restaurants with 0.1 km from the 52.2297, 21.0122 location:')
 for restaurant in restaurants:
     print(restaurant.name)
 
 
 # Query on relation field
+
+resturants = Object.please.list(class_name='restaurant').filter(
+    tags__tag__eq='pizza'
+)
+
+print('Restaurants with tag: pizza')
+for restaurant in restaurants:
+    print(restaurant.name)
+
+# or, if you have the class:
+
+restaurant_class = Class.please.get(name='restaurant')
+restaurants = restaurant_class.objects.list().filter(
+    tags__tag__eq='pizza'
+)
+
+print('Restaurants with tag: pizza')
+for restaurant in restaurants:
+    print(restaurant.name)
+
 
 # Query on datetime field
 
