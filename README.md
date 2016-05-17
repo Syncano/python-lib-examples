@@ -1,42 +1,49 @@
 
-# This repository stores an extensive guide for using data objects in Syncano with Python Library
+# This repository stores an extensive guide for using data objects in Syncano with our Python Library
 
-Please use the newest version of Syncano LIB for running this examples.
+Please use the newest version of [Syncano LIB](https://github.com/syncano/syncano-python/) for running these examples.
 
 # Table of Contents
 1. [Preface] (#preface)
 2. [App core functionality] (#app-core-functionality)
 3. [Create all needed models] (#create-all-needed-models)
-4. [Query on geopoint field] (#query-on-geopoint-field)
-5. [Query on relation field] (#query-on-relation-field)
-6. [Query on datetime field] (#query-on-datetime-field)
+4. [Query on geopoint field] (#query-on-a-geopoint-field)
+5. [Query on relation field] (#query-on-a-relation-field)
+6. [Query on datetime field] (#query-on-a-datetime-field)
 7. [Query on string fields] (#query-on-string-fields)
-8. [Query on multiples fields] (#query-on-multiples-fields)
-9. [Made a table reservation] (#made-a-table-reservation)
+8. [Query on multiples fields] (#query-on-multiple-fields)
+9. [Made a table reservation] (#make-a-table-reservation)
 10. [Add objects to relations] (#add-objects-to-relations)
 11. [Remove objects from relations] (#remove-objects-from-relations)
-12. [Handle the files] (#handle-the-files)
+12. [Handle the files] (#handle-files)
 13. [Contribute] (#contribute)
 
 ## Preface
 
-You want to build an app. This app is going to store information about restaurant in your town. Later in your country 
- and later in the entire world. You're a genius who want to revolution the table reservation process.  
+You want to build an app. Your app will store information about restaurants in your home town. Later on - in your country and eventually in the entire world. You're a genius who wants to revolutionize the table reservation process.  
 
-And you're using Syncano.
+And you use Syncano.
 
 ## App core functionality
 
-* user can search restaurant by geo location;
-* user can search restaurant by empty tables in there;
-* user can search restaurant by tags (which can describe a menu or some special abilities like: "kid friendly");
+* user can search for a restaurant by geo location;
+* user can search for a restaurant by empty tables in there;
+* user can search for a restaurant by tags (which can describe a menu or special properties like: "kid friendly");
 * user can make a reservation for the table; 
 
 ## Create all needed models
 
-Firstly you will need some classes definition - based on that you will be storing your data.
+Firstly you will need definitions of your classes.
+
+On Syncano, to define a class, you use schemas. Schema is a description of your class, listing what fields it holds, of what type, and what type of indexing is used on your fields (if any).
+
+E.g. this: 
+```python
+"name": "name", "type": "string", "filter_index": True
+```
+means your field is named `name`, its type is `string` and `filter_index` is enabled -- so you will be able to search for data based on that field.
  
-To make things simple - you want to release MVP first - you defined following schemas:
+To make things simple -- you want to release MVP first -- you define your classes using following schemas:
 
 ```python
 item_schema = [
@@ -84,7 +91,7 @@ restaurant_schema = [
 
 You created the filter_index attribute for all the fields that are expected to be searchable.
 
-Now create a class in Syncano
+Now, create a class in Syncano
 
 ```python
 import syncano
@@ -105,9 +112,19 @@ item_class = Class.objects.create(
 
 ```
 
-Use the following pattern for rest of the classes - this can be found in `init_data.py` script. If you provide 
-connection data, run: `python init_data.py` to create all needed structures (running the script again will move you to 
-the starting point - will clear all the later provided data). The script will also creates sample data objects for you
+Use the following pattern for rest of your classes. 
+
+You can use a script we provided for you -- `init_data.py` -- that automates these tasks. For the script to work properly, you first need to update it with your account details. Open `init_data.py` file, and change following lines:
+
+```python
+INSTANCE_NAME = 'INSTANCE NAME'
+API_KEY = 'ADMIN API KEY'
+```
+Replace `INSTANCE NAME` with name of your instance, and `ADMIN API KEY` with your Account Key (you can [find it in your Dashboard](https://dashboard.syncano.io/#/account/authentication)). 
+After you provide connection data, run: `python init_data.py` to create all structures needed for you app to work properly. 
+
+(IMPORTANT: running the script again would move you back to the starting point - it clears all the data you provide after running it for the first time). 
+Script will also create some sample data objects for you.
 
 ```python
 
@@ -130,11 +147,11 @@ pasta = Object.please.create(
 )
 ```
 
-It would be nice to know what objects we have initially, so run following code:
+It would be nice to know what objects we have initially. To get them, run following code:
 
 ```python
 
-# this are available class names
+# these are available class names
 ITEM = 'item'
 MENU = 'menu'
 RESERVATION = 'reservation'
@@ -149,15 +166,15 @@ for tag in Object.please.list(class_name=TAG):
     
 # query about restaurants:
 
-for restaurant in Object.please.list(class_name='restaurant'):
+for restaurant in Object.please.list(class_name=RESTAURANT):
     print(restaurant.name, restaurant.location)
 
 ```
 
-### Query on geopoint field
+### Query on a geopoint field
 
 ```python
-restaurants = Object.please.list(class_name='restaurant').filter(
+restaurants = Object.please.list(class_name=RESTAURANT).filter(
     location__near=(
         GeoPoint(52.2297, 21.0122),
         Distance(kilometers=0.1)
@@ -166,7 +183,7 @@ restaurants = Object.please.list(class_name='restaurant').filter(
 
 # or (if restaurant class is present)
 
-restaurant_class = Class.please.get(name='restaurant')
+restaurant_class = Class.please.get(name=RESTAURANT)
 restaurants = restaurant_class.objects.filter(
     location__near=(
         GeoPoint(52.2297, 21.0122),
@@ -177,12 +194,12 @@ restaurants = restaurant_class.objects.filter(
 ```
 
 Such query will find all restaurants which are 0.1 kilometers from point: latitude = 52.2297, longitude = 21.0122 
-- which in our examples will be `Pit Bull - London Steakhouse`
+- which in our example is `Pit Bull - London Steakhouse`.
  
-You can also specify the miles there - if you prefer:
+if you prefer, you can also specify to use `miles` instead of `kilometers`:
  
 ```python
-restaurant_class = Class.please.get(name='restaurant')
+restaurant_class = Class.please.get(name=RESTAURANT)
 restaurants = restaurant_class.objects.filter(
     location__near=(
         GeoPoint(52.2297, 21.0122),
@@ -191,32 +208,31 @@ restaurants = restaurant_class.objects.filter(
 )
 ```
 
-### Query on relation field
+### Query on a relation field
 
-Now we will make a query which find all the restaurants with specified tag.
+Now we will make a query which finds all the restaurants with specified tag.
 
 ```python
-resturants = Object.please.list(class_name='restaurant').filter(
+resturants = Object.please.list(class_name=RESTAURANT).filter(
     tags__tag__eq='pizza'
 )
 
 # or (when restaurant class is present)
 
-restaurant_class = Class.please.get(name='restaurant')
+restaurant_class = Class.please.get(name=RESTAURANT)
 restaurants = restaurant_class.objects.filter(
     tags__tag__eq='pizza'
 )
 
 ```
 
-This will return all restaurants that are related with tag: `pizza`
+This will return all restaurants that are related to the tag: `pizza`
 
-
-### Query on datetime field
+### Query on a datetime field
 
 We prepared a `start_date` and `end_date` fields in `menu` class - it's because the menu can be seasonal.
   
-Play a little with the datetime queries.
+Lets play with the datetime queries.
 
 ```python
 
@@ -224,23 +240,23 @@ from datetime import datetime
 
 today = datetime.now()
 
-menu_class = Class.please.get(name='menu')
+menu_class = Class.please.get(name=MENU)
 menus = menu_class.objects.filter(
     start_date__lte=today,
 )
 
 ```
 
-This query will return all the menu that starts in the past (earlier than today). Currently it will be both menus
+This query will return all menus that start in the past (earlier than today). Currently it will be both menus
 for both defined restaurants.
 
-Lets make a query which allow to obtain menu for specified restaurant:
+Lets make a query which allows to obtain menu for a specified restaurant:
 
 ```python
 
 # assume we already have the restaurant object, which can be obtained as follows:
 
-restaurant_class = Class.please.get(name='restaurant')
+restaurant_class = Class.please.get(name=RESTAURANT)
 pit_bull = restaurant_class.objects.filter(
     location__near=(
         GeoPoint(52.2297, 21.0122),
@@ -250,7 +266,7 @@ pit_bull = restaurant_class.objects.filter(
 
 # in menu we have a reference to the restaurant, lets use it:
 
-menu_class = Class.please.get(name='menu')
+menu_class = Class.please.get(name=MENU)
 menus = menu_class.objects.filter(
     restaurant__eq=pit_bull.id,
     start_date__lte=today,
@@ -266,7 +282,7 @@ Lets find a menu items which starts with some word.
 
 ```python
 
-item_class = Class.objects.get(name='item')
+item_class = Class.objects.get(name=ITEM)
 items = item_class.objects.filter(
     name__startswith='Carbo'  # case sensitive
 )
@@ -275,13 +291,13 @@ items = item_class.objects.filter(
 
 Currently we are working to add support with another string fields lookups, eg.: istartswith. 
 
-### Query on multiples fields
+### Query on multiple fields
 
-Lets find all restaurants that has an tables by window and for 4 people in some location.
+Lets find all restaurants that have not-reserved tables for 4 people, situated by the window.
 And lets make sure that the restaurant name starts with 'Pit';
 
 ```python
-restaurant_class = Class.please.get(name='restaurant')
+restaurant_class = Class.please.get(name=RESTAURANT)
 restaurants = restaurant_class.objects.filter(
     location__near=(
         GeoPoint(52.2297, 21.0122),
@@ -295,14 +311,14 @@ restaurants = restaurant_class.objects.filter(
 
 ```
 
-### Made a table reservation
+### Make a table reservation
 
-Now when we already have a restaurants that meets our criteria - lets make a table reservation;
+Now when we already have restaurants that meet our criteria - lets make a table reservation;
 
 ```python
 tables_ids = restaurants[0].tables
 
-table_class = Class.please.get(name='table')
+table_class = Class.please.get(name=TABLE)
 table = table_class.objects.filter(
     id__in=tables_ids, 
     by_window__eq=True, 
@@ -328,7 +344,7 @@ Let's make a reservation object and assign it to the table above;
 
 from datetime import datetime 
 
-reservation_class = Class.please.get(class_name='reservation')
+reservation_class = Class.please.get(class_name=RESERVATION)
 reservation = reservation_class.objects.create(
     user_identifier='user42@example.com',
     date=datetime.now()
@@ -346,7 +362,7 @@ Removing a object from relation is pretty straightforward, assume that above res
 table.reservation_set.remove(reservation)
 ```
 
-### Handle the files
+### Handle files
 
 We created a files in menu item schema - but there are empty. Lets fill it with some data.
 
